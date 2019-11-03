@@ -1,3 +1,5 @@
+# wha to do next time: figure out how to remove sword from inventory when its used against a monster
+
 require 'io/console'
 
 class Tile
@@ -34,8 +36,23 @@ class Monster < Tile
         @display = '\|/'
         @message = "MONSTER!!!!#{7.chr}"
         @times_i_got_stepped_on = 0
-        @damage = 1
     end
+    def step player
+        super
+        @display = '\|/'
+        if @times_i_got_stepped_on >= 1 
+            @message = "There's nothing but a pile of bones here."
+        elsif player.sword >= 1
+            @times_i_got_stepped_on += 1
+            @message = "You used your sword to kill the monster!\nYour sword broke."
+            player.score += 10
+            player.sword -= 1
+        else
+            player.health -= 1
+        end
+        
+    end
+
 end 
 class Wall < Tile
     def initialize
@@ -62,6 +79,7 @@ class Sword < Tile
             @message = "It is now empty"
         else
             player.inventory << @sword
+            player.sword += 1
             @times_i_got_stepped_on += 1
         end
         
@@ -140,6 +158,7 @@ grid_height = grid.length
 grid_width = grid[0].length
 
 grid[2][3] = Wall.new
+grid[1][3] = Wall.new
 grid[2][4] = Grass.new
 grid[2][5] = Grass.new
 grid[3][4] = Grass.new
@@ -182,7 +201,7 @@ while(player.health > 0 && keepPlaying == true)
     puts grid[player.y][player.x].message
     puts "|=========|"
     puts " INVENTORY"
-    puts player.inventory.inspect
+    puts player.inventory
 #{player.sword}
 
 
