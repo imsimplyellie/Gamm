@@ -45,8 +45,9 @@ class Monster < Tile
         elsif player.sword >= 1
             @times_i_got_stepped_on += 1
             @message = "You used your sword to kill the monster!\nYour sword broke."
-            player.score += 10
+            player.score + 10
             player.sword -= 1
+            player.inventory.delete([0])
         else
             player.health -= 1
         end
@@ -119,6 +120,26 @@ class Treasure < Tile
     end
 end
 
+class Potions < Tile
+    def initialize
+        super
+        @display = '\|/'
+        @message = "glug glug glug...+1 health!"
+        @times_i_got_stepped_on = 0
+    end
+    
+    def step player
+        super
+        @times_i_got_stepped_on += 1
+        display = '\|/'
+        if @times_i_got_stepped_on > 1
+            @message = "There is nothing here."
+        else
+            player.health += 1
+        end
+    end
+end
+
 
 
 class Player
@@ -165,6 +186,7 @@ grid[3][4] = Grass.new
 grid[3][5] = Sword.new
 grid[5][8] = Treasure.new
 grid[6][8] = Monster.new
+grid[4][5] = Potions.new
 # grid[9][2] = Portal.new 3,2
 
 wall = 1
